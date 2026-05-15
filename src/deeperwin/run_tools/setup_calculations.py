@@ -1,5 +1,4 @@
 import itertools
-from typing import List, Tuple, Dict
 from deeperwin.configuration import set_with_flattened_key, Configuration, build_physical_configs_from_changes
 import copy
 from deeperwin.run_tools.dispatch import (
@@ -14,13 +13,13 @@ from deeperwin.utils.utils import setup_job_dir
 import ruamel.yaml as yaml
 
 
-def prepare_single_job(args: List[str], exp_dir: str, exp_config_dict: Dict) -> Tuple[List[str], List[Dict], List[str]]:
+def prepare_single_job(args: list[str], exp_dir: str, exp_config_dict: dict) -> tuple[list[str], list[dict], list[str]]:
     """
     Creates job dirs, job configs dictionaries & CLI command for performing (a single geometry on) a single job.
 
     :param args: command line arguments passed via cli
     :param exp_dir: directory name of the experiment
-    :param exp_config_dict: Dictionary containing the config for experiment
+    :param exp_config_dict: dictionary containing the config for experiment
     """
     exp_config_dict = set_with_flattened_key(exp_config_dict, "experiment_name", "".join(exp_dir.split("/")[-1:]))
     job_dirs = [exp_dir]
@@ -31,14 +30,14 @@ def prepare_single_job(args: List[str], exp_dir: str, exp_config_dict: Dict) -> 
 
 
 def prepare_mulitple_geometries_on_single_job_shared(
-    args: List[str], exp_dir: str, exp_config_dict: Dict
-) -> Tuple[List[str], List[Dict], List[str]]:
+    args: list[str], exp_dir: str, exp_config_dict: dict
+) -> tuple[list[str], list[dict], list[str]]:
     """
     Creates job dirs & job configs dictionaries for performing multiple geometries on a single job using shared optimization.
 
     :param args: command line arguments passed via cli
     :param exp_dir: directory name of the experiment
-    :param exp_config_dict: Dictionary containing the config for experiment
+    :param exp_config_dict: dictionary containing the config for experiment
     """
     job_dirs, job_config_dicts, _ = prepare_single_job(args, exp_dir, exp_config_dict)
     command = "deeperwin run-multiple-shared config.yml".split()
@@ -46,14 +45,14 @@ def prepare_mulitple_geometries_on_single_job_shared(
 
 
 def prepare_multiple_geometries_on_multiple_jobs(
-    args: List[str], exp_dir: str, exp_config_dict: Dict
-) -> Tuple[List[str], List[Dict], List[str]]:
+    args: list[str], exp_dir: str, exp_config_dict: dict
+) -> tuple[list[str], list[dict], list[str]]:
     """
     Creates job dirs & job configs dictionaries for performing mulitple job on different geometries.
 
     :param args: command line arguments passed via cli
     :param exp_dir: directory name of the experiment
-    :param exp_config_dict: Dictionary containing the config for experiment
+    :param exp_config_dict: dictionary containing the config for experiment
     """
     job_dirs = []
     job_config_dicts = []
@@ -75,14 +74,14 @@ def prepare_multiple_geometries_on_multiple_jobs(
 
 
 def prepare_wandb_sweep_jobs(
-    args: List[str], exp_dir: str, exp_config_dict: Dict
-) -> Tuple[List[str], List[Dict], List[str]]:
+    args: list[str], exp_dir: str, exp_config_dict: dict
+) -> tuple[list[str], list[dict], list[str]]:
     """
     Creates job dirs & job configs dictionaries for performing a wandb hyperparameter sweep.
 
     :param args: command line arguments passed via cli
     :param exp_dir: directory name of the experiment
-    :param exp_config_dict: Dictionary containing the config for experiment
+    :param exp_config_dict: dictionary containing the config for experiment
     """
     job_dirs = []
     job_config_dicts = []
@@ -101,7 +100,7 @@ def prepare_wandb_sweep_jobs(
     return job_dirs, job_config_dicts, command
 
 
-def setup_calculations(args: List[str]):
+def setup_calculations(args: list[str]):
     wandb_sweep = len(args.wandb_sweep) == 3
 
     # load and parse config

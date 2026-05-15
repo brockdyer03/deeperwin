@@ -3,7 +3,8 @@ File containing the wavefunction model & function to build the model
 """
 
 import logging
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from collections.abc import Callable
+from typing import Any
 
 import haiku as hk
 import haiku.experimental
@@ -90,7 +91,7 @@ class Wavefunction(hk.Module):
             config:                   Model Configuration
             phys_config:              Physical Configuration, in the case of multiple compounds, this should be the
                                       physical configuration with the largest amount of electrons
-            max_n_particles:          NamedTuple containing the maximum amount of ions, up_el, dn_el that the wavefunction
+            max_n_particles:          Namedtuple containing the maximum amount of ions, up_el, dn_el that the wavefunction
                                       model should consider
             train_multiple_compounds: Whether to train on multiple or single compound
             Name:
@@ -115,7 +116,7 @@ class Wavefunction(hk.Module):
             name="orbitals",
         )
 
-    def __call__(self, n_up: int, n_dn: int, r, R, Z, fixed_params: Optional[Dict] = None):
+    def __call__(self, n_up: int, n_dn: int, r, R, Z, fixed_params: dict | None = None):
         fixed_params = fixed_params or {}
         diff_dist, features = self.input_preprocessor(n_up, n_dn, r, R, Z, fixed_params)
 
@@ -133,7 +134,7 @@ class Wavefunction(hk.Module):
 
         return phase, log_psi_sqr
 
-    def get_slater_matrices(self, n_up, n_dn, r, R, Z, fixed_params: Optional[Dict] = None):
+    def get_slater_matrices(self, n_up, n_dn, r, R, Z, fixed_params: dict | None = None):
         assert n_up + n_dn == r.shape[-2]  # assert down & up electrons equal total amount of electrons
 
         fixed_params = fixed_params or {}
@@ -162,7 +163,7 @@ class Wavefunction(hk.Module):
     def _calculate_orbitals(self, diff_dist, embeddings, fixed_params, n_ions, n_up, n_dn):
         return self.orb_net(diff_dist, embeddings, fixed_params, n_ions, n_up, n_dn)
 
-    def _calculate_cache(self, n_up: int, n_dn: int, r, R, Z, fixed_params: Optional[Dict] = None):
+    def _calculate_cache(self, n_up: int, n_dn: int, r, R, Z, fixed_params: dict | None = None):
         cache = dict()
         if not self.config.use_cache:
             return None
@@ -261,11 +262,11 @@ class Wavefunction(hk.Module):
 
 def build_log_psi_squared(
     config: ModelConfig,
-    physical_config: Union[PhysicalConfig, List[PhysicalConfig]],
+    physical_config: PhysicalConfig | list[PhysicalConfig],
     baseline_config: BaselineConfigType,
-    fixed_params: Dict,
+    fixed_params: dict,
     rng_seed: Any,
-) -> Tuple[Callable, Callable, Callable, Dict, Dict]:
+) -> tuple[Callable, Callable, Callable, dict, dict]:
     if isinstance(physical_config, PhysicalConfig):
         _phys_config = physical_config
     else:
@@ -302,7 +303,7 @@ def build_log_psi_squared(
 # TODO Michael+Leon: remove concept of max_n_up, max_ndown, max_n_ions
 def construct_wavefunction_definition(
     config: ModelConfig,
-    physical_config: Union[PhysicalConfig, List[PhysicalConfig]],
+    physical_config: PhysicalConfig | list[PhysicalConfig],
 ) -> WavefunctionDefinition:
     """
     Construct definition for the wavefunction model
@@ -328,9 +329,9 @@ def construct_wavefunction_definition(
 
 def check_orbital_intialization(
     config: ModelConfig,
-    physical_config: Union[PhysicalConfig, List[PhysicalConfig]],
-    params: Dict[str, Dict[str, jnp.ndarray]],
-) -> Dict[str, Dict[str, jnp.ndarray]]:
+    physical_config: PhysicalConfig | list[PhysicalConfig],
+    params: dict[str, dict[str, jnp.ndarray]],
+) -> dict[str, dict[str, jnp.ndarray]]:
     if (
         isinstance(physical_config, PhysicalConfig)
         and config.orbitals.envelope_orbitals

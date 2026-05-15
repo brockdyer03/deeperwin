@@ -1,4 +1,3 @@
-from typing import Optional
 import jax
 import jax.numpy as jnp
 import haiku as hk
@@ -108,7 +107,7 @@ class DenseGNN(hk.Module):
             )
 
     def __call__(
-        self, nodes_rec: jax.Array, nodes_snd: Optional[jax.Array] = None, edges: Optional[jax.Array] = None, mask=None
+        self, nodes_rec: jax.Array, nodes_snd: jax.Array | None = None, edges: jax.Array | None = None, mask=None
     ):
         if (edges is not None) and self.edge_embedding:
             edges = self.edge_embedding(edges)

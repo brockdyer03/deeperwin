@@ -4,7 +4,6 @@ Logic for Markov chain Monte Carlo (MCMC) steps.
 
 import copy
 import functools
-from typing import Dict
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -33,7 +32,7 @@ class MCMCState:
     step_nr: jnp.array = field(default_factory=lambda: jnp.array(0, dtype=int))
     acc_rate: jnp.array = field(default_factory=lambda: jnp.array(0.0))
 
-    def build_batch(self, fixed_params: Dict):
+    def build_batch(self, fixed_params: dict):
         return self.r, self.R, self.Z, fixed_params
 
     @classmethod

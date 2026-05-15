@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import haiku as hk
 import jax
 from jax import numpy as jnp
@@ -127,7 +125,7 @@ class EnvelopeOrbitals(hk.Module):
         return orb_up, orb_dn
 
 
-def _determine_n_output_orbitals(n_up: int, n_dn: int, determinant_schema: str) -> Tuple[int]:
+def _determine_n_output_orbitals(n_up: int, n_dn: int, determinant_schema: str) -> tuple[int]:
     """
     Function to determine the dimensionality of the outputted up & down MO matrix blocks given
     the number of up & dn electrons.
@@ -140,7 +138,7 @@ def _determine_n_output_orbitals(n_up: int, n_dn: int, determinant_schema: str) 
         return (n_up, n_dn)
 
 
-def _determine_elec_idxs(n_up: int, n_dn: int, determinant_schema: str) -> Tuple[int]:
+def _determine_elec_idxs(n_up: int, n_dn: int, determinant_schema: str) -> tuple[int]:
     """
     Function to determine indices for indexing electron embeddings when inferring the
     MO matrix blocks

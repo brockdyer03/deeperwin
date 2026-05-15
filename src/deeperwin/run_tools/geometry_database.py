@@ -1,6 +1,5 @@
 # %%
 import numpy as np
-from typing import List, Dict, Union
 import hashlib
 import pathlib
 import pandas as pd
@@ -292,7 +291,7 @@ def _get_default_energies_fname():
     return pathlib.Path(__file__).parent.joinpath("../../../datasets/db/energies.csv").absolute()
 
 
-def load_geometries(geom_db_fname=None) -> Dict[str, Geometry]:
+def load_geometries(geom_db_fname=None) -> dict[str, Geometry]:
     geom_db_fname = geom_db_fname or _get_default_geom_fname()
     with open(geom_db_fname, "r") as f:
         geometries = json.load(f)
@@ -302,7 +301,7 @@ def load_geometries(geom_db_fname=None) -> Dict[str, Geometry]:
     return geometries
 
 
-def load_datasets(datasets_db_fname=None) -> Dict[str, GeometryDataset]:
+def load_datasets(datasets_db_fname=None) -> dict[str, GeometryDataset]:
     datasets_db_fname = datasets_db_fname or _get_default_datasets_fname()
     with open(datasets_db_fname, "r") as f:
         datasets = json.load(f)
@@ -312,7 +311,7 @@ def load_datasets(datasets_db_fname=None) -> Dict[str, GeometryDataset]:
     return datasets
 
 
-def get_all_geometries(dataset_or_geom: Union[List[str], str], all_geoms=None, all_datasets=None):
+def get_all_geometries(dataset_or_geom: list[str] | str, all_geoms=None, all_datasets=None):
     """
     Get an identifer of a dataset, a geometry, a list of geometries or a list of datasets and return a list of all geometries within this set.
 

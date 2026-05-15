@@ -8,7 +8,6 @@ import logging
 import os
 import subprocess
 import re
-from typing import List
 import dataclasses
 import jax
 import jax.scipy
@@ -654,10 +653,10 @@ class PeriodicMeanFieldDuck:
     """Quacks like a pyscf.pbc.scf meanfield object."""
 
     e_tot: float
-    mo_coeff: List
+    mo_coeff: list
     kpts: np.array
-    mo_energy: List
-    mo_occ: List
+    mo_energy: list
+    mo_occ: list
 
 
 def load_periodic_pyscf(chkfile):
@@ -704,11 +703,11 @@ def get_number_of_params(params):
 
 def get_next_geometry_index(
     n_epoch: int,
-    geometry_data_stores: List["GeometryDataStore"],  # noqa: F821
+    geometry_data_stores: list["GeometryDataStore"],  # noqa: F821
     scheduling_method: str,
     max_age: int,
     n_initial_round_robin_per_geom: int,
-    permutation: List[int] = None,
+    permutation: list[int] = None,
 ) -> int:
     """
     Suggests next geometry to train on using either

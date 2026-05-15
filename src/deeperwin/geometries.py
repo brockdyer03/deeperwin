@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Dict, Tuple
 import scipy
 from jax import numpy as jnp
 from deeperwin.configuration import Configuration, PhysicalConfig, DistortionConfig
@@ -23,10 +22,10 @@ class GeometryDataStore:
     physical_config: PhysicalConfig = None
     physical_config_original: PhysicalConfig = None
     rotation: np.ndarray = dataclasses.field(default_factory=lambda: np.eye(3))
-    spin_state: Tuple[int] = None
+    spin_state: tuple[int] = None
     mcmc_state: MCMCState = None
-    fixed_params: Dict = None
-    clipping_state: Tuple[float, float] = None
+    fixed_params: dict = None
+    clipping_state: tuple[float, float] = None
     wavefunction_logger: WavefunctionLogger = None
     current_metrics = {}
     n_distortions: int = 0

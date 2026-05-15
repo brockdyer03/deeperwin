@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional
 import numpy as np
 import haiku as hk
 import jax
@@ -292,7 +292,7 @@ class TransferableAtomicOrbitals(hk.Module):
         n_up: int,
         n_dn: int,
         orbital_features: jnp.array,  # [n_ions, n_orbitals, feature_dim]
-        cache: Optional[Dict] = None,
+        cache: dict | None = None,
     ):
         batch_dims = embeddings.el.shape[:-2]
         embedding_dim = embeddings.el_ion.shape[-1] if self.config.use_el_ion_embedding else embeddings.el.shape[-1]

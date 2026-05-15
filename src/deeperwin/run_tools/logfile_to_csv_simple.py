@@ -27,7 +27,7 @@ def try_convert(val, to_type):
         raise
 
 
-def parse_data(data, blacklist: Optional[set] = None):
+def parse_data(data, blacklist: set | None = None):
     blacklist = (blacklist or set()) | METRICS_BLACKLIST
     tokens = data.split("; ")
     data_dict = dict()

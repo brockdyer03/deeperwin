@@ -8,7 +8,7 @@ import time
 import os.path
 import sys
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Literal, Optional
+from typing import Any, Literal
 
 import jax
 import numpy as np
@@ -81,19 +81,19 @@ class DataLogger(ABC):
         d[key] = value
         self.log_metrics(d, epoch, metric_type, force_log)
 
-    def log_tags(self, tags: List[str]):
+    def log_tags(self, tags: list[str]):
         self.log_param("tags", tags)
 
     def log_config(self, config: Configuration):
         self.log_params(config.as_flattened_dict())
 
     @abstractmethod
-    def log_params(self, params: Dict[str, Any]):
+    def log_params(self, params: dict[str, Any]):
         pass
 
     @abstractmethod
     def log_metrics(
-        self, metrics: Dict[str, Any], epoch=None, metric_type: Literal["", "opt", "eval", "pre"] = "", force_log=False
+        self, metrics: dict[str, Any], epoch=None, metric_type: Literal["", "opt", "eval", "pre"] = "", force_log=False
     ):
         pass
 
@@ -122,11 +122,11 @@ class SilentLogger(DataLogger):
         super().__init__(None, None, None)
 
     def log_metrics(
-        self, metrics: Dict[str, Any], epoch=None, metric_type: Literal["", "opt", "eval", "pre"] = "", force_log=False
+        self, metrics: dict[str, Any], epoch=None, metric_type: Literal["", "opt", "eval", "pre"] = "", force_log=False
     ):
         pass
 
-    def log_params(self, params: Dict[str, Any]):
+    def log_params(self, params: dict[str, Any]):
         pass
 
 
@@ -140,7 +140,7 @@ class LoggerCollection(DataLogger):
         config: LoggingConfig,
         name: str,
         use_wandb_group: bool = False,
-        exp_idx_in_group: Optional[int] = None,
+        exp_idx_in_group: int | None = None,
         save_path: str = ".",
         prefix: str = "",
         parallel_wandb_logging: bool = False,
@@ -154,14 +154,14 @@ class LoggerCollection(DataLogger):
             group_name = None
             experiment_name = name
 
-        self.loggers: List[DataLogger] = self.build_loggers(
+        self.loggers: list[DataLogger] = self.build_loggers(
             config, group_name, experiment_name, save_path, prefix, parallel_wandb_logging
         )
 
     @staticmethod
     def build_loggers(
         config: LoggingConfig,
-        group_name: Optional[str],
+        group_name: str | None,
         experiment_name: str,
         save_path: str = ".",
         prefix: str = "",
@@ -205,19 +205,19 @@ class LoggerCollection(DataLogger):
         for l in self.loggers:
             l.log_config(config)
 
-    def log_params(self, params: Dict[str, Any]):
+    def log_params(self, params: dict[str, Any]):
         for l in self.loggers:
             l.log_params(params)
 
     def log_metrics(
-        self, metrics: Dict[str, Any], epoch=None, metric_type: Literal["", "opt", "eval", "pre"] = "", force_log=False
+        self, metrics: dict[str, Any], epoch=None, metric_type: Literal["", "opt", "eval", "pre"] = "", force_log=False
     ):
         if metrics is None:
             return
         for l in self.loggers:
             l.log_metrics(metrics, epoch, metric_type, force_log)
 
-    def log_tags(self, tags: List[str]):
+    def log_tags(self, tags: list[str]):
         for l in self.loggers:
             l.log_tags(tags)
 
@@ -248,7 +248,7 @@ class WandBParallelLogger(DataLogger):
     def __init__(
         self,
         config: WandBConfig,
-        group_name: Optional[str],
+        group_name: str | None,
         experiment_name: str,
         save_path: str = ".",
         prefix: str = "",
@@ -281,7 +281,7 @@ class WandBParallelLogger(DataLogger):
     def log_params(self, params):
         self.queue.put(("params", params))
 
-    def log_tags(self, tags: List[str]):
+    def log_tags(self, tags: list[str]):
         self.queue.put(("tags", tags))
 
     @staticmethod
@@ -318,7 +318,7 @@ class WandBLogger(DataLogger):
     def __init__(
         self,
         config: WandBConfig,
-        group_name: Optional[str],
+        group_name: str | None,
         experiment_name: str,
         save_path: str = ".",
         prefix: str = "",
@@ -396,10 +396,10 @@ class WandBLogger(DataLogger):
     def log_params(self, params):
         wandb.run.config.update(params, allow_val_change=True if self.logger_config.id is not None else False)
 
-    def log_tags(self, tags: List[str]):
+    def log_tags(self, tags: list[str]):
         wandb.run.tags = wandb.run.tags + tuple(tags)
 
-    def _log_metrics_async(self, metrics: Dict[str, Any]):
+    def _log_metrics_async(self, metrics: dict[str, Any]):
         wandb.run.log(metrics)
 
     def log_metrics(self, metrics, epoch=None, metric_type: str = "", force_log=False):
@@ -436,7 +436,7 @@ class BasicLogger(DataLogger):
         self.blacklist = tuple(config.blacklist)
 
     def log_metrics(
-        self, metrics: Dict[str, Any], epoch=None, metric_type: Literal["", "opt", "eval", "pre"] = "", force_log=False
+        self, metrics: dict[str, Any], epoch=None, metric_type: Literal["", "opt", "eval", "pre"] = "", force_log=False
     ):
         if (not force_log) and self._should_skip_epoch(epoch):
             return
@@ -448,7 +448,7 @@ class BasicLogger(DataLogger):
             msg = f"{metric_type} Epoch {epoch:>5d}: " + msg
         self.logger.info(msg)
 
-    def log_params(self, params: Dict[str, Any]):
+    def log_params(self, params: dict[str, Any]):
         msg = "; ".join(f"{key}={value}" for key, value in params.items())
         self.logger.info(msg)
 
@@ -471,7 +471,7 @@ class PickleLogger(DataLogger):
         self.config = config
 
     def log_metrics(
-        self, metrics: Dict[str, Any], epoch=None, metric_type: Literal["", "opt", "eval", "pre"] = "", force_log=False
+        self, metrics: dict[str, Any], epoch=None, metric_type: Literal["", "opt", "eval", "pre"] = "", force_log=False
     ):
         if (not force_log) and self._should_skip_epoch(epoch):
             return
@@ -486,7 +486,7 @@ class PickleLogger(DataLogger):
                 epoch_key = "epoch"
             self.history.append({epoch_key: epoch, **metrics})
 
-    def log_params(self, params: Dict[str, Any]):
+    def log_params(self, params: dict[str, Any]):
         self.meta_data.update(params)
 
     def log_checkpoint(
@@ -539,7 +539,7 @@ class WavefunctionLogger:
             return np.nanmean(samples_for_averaging, axis=0)
 
     def log_step(
-        self, metrics, E_ref=None, mcmc_state=None, opt_stats=None, extra_metrics=None, epoch: Optional[int] = None
+        self, metrics, E_ref=None, mcmc_state=None, opt_stats=None, extra_metrics=None, epoch: int | None = None
     ):
         if self.loggers is None:
             return
@@ -598,7 +598,7 @@ class WavefunctionLogger:
 def initialize_training_loggers(
     config: Configuration,
     use_wandb_group: bool = False,
-    exp_idx_in_group: Optional[int] = None,
+    exp_idx_in_group: int | None = None,
     save_path=".",
     parallel_wandb_logging=False,
 ) -> LoggerCollection:

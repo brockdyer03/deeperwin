@@ -12,7 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional, Any, Callable, Tuple, Mapping, Union
+from collections.abc import Callable, Mapping
+from typing import Any
 import kfac_jax
 import optax
 import jax
@@ -22,7 +23,7 @@ from deeperwin.optimization.opt_utils import build_lr_schedule, build_optax_opti
 from deeperwin.srcg import SRCGOptimizer
 from deeperwin import curvature_tags_and_blocks
 
-OptimizerConfigType = Union[StandardOptimizerConfig, OptimizerConfigKFAC]
+OptimizerConfigType = StandardOptimizerConfig | OptimizerConfigKFAC
 OptaxState = Any
 
 
@@ -38,7 +39,7 @@ class OptaxWrapper:
         optax_optimizer: optax.GradientTransformation,
         multi_device: bool = False,
         pmap_axis_name="devices",
-        batch_process_func: Optional[Callable[[Any], Any]] = lambda x: x,
+        batch_process_func: Callable[[Any], Any] | None = lambda x: x,
     ):
         """Initializes the Optax wrapper.
 
@@ -86,8 +87,8 @@ class OptaxWrapper:
         params: kfac_jax.utils.Params,
         rng: jnp.ndarray,
         batch: kfac_jax.utils.Batch,
-        static_args: Optional[Any] = None,
-        func_state: Optional[kfac_jax.utils.FuncState] = None,
+        static_args: Any | None = None,
+        func_state: kfac_jax.utils.FuncState | None = None,
     ) -> OptaxState:
         """Initializes the optimizer and returns the appropriate optimizer state."""
         del rng, batch, func_state, static_args
@@ -103,7 +104,7 @@ class OptaxWrapper:
         static_args: Any,
         rng: jnp.ndarray,
         batch: kfac_jax.utils.Batch,
-        func_state: Optional[kfac_jax.utils.FuncState] = None,
+        func_state: kfac_jax.utils.FuncState | None = None,
     ) -> kfac_jax.optimizer.FuncOutputs:
         """A single step of optax."""
         batch = self._batch_process_func(batch)
@@ -148,19 +149,19 @@ class OptaxWrapper:
         self,
         params: kfac_jax.utils.Params,
         state: OptaxState,
-        static_args: Optional[Any],
+        static_args: Any | None,
         rng: jnp.ndarray,
         batch: kfac_jax.utils.Batch,
-        func_state: Optional[kfac_jax.utils.FuncState] = None,
-    ) -> Union[
-        Tuple[
+        func_state: kfac_jax.utils.FuncState | None = None,
+    ) -> (
+        tuple[
             kfac_jax.utils.Params,
             Any,
             kfac_jax.utils.FuncState,
             Mapping[str, jnp.ndarray],
-        ],
-        Tuple[kfac_jax.utils.Params, Any, Mapping[str, jnp.ndarray]],
-    ]:
+        ]
+        | tuple[kfac_jax.utils.Params, Any, Mapping[str, jnp.ndarray]]
+    ):
         """A step with similar interface to KFAC."""
         result = self._jit_step(
             params,

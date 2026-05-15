@@ -1,7 +1,8 @@
 import jax
 import jax.numpy as jnp
 import jax.scipy.sparse.linalg
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 from deeperwin.configuration import SRCGOptimizerConfig
 from deeperwin.optimization.opt_utils import build_optax_optimizer, build_lr_schedule
 from deeperwin.utils.utils import pmap, pmean, tree_dot, tree_norm

@@ -3,7 +3,7 @@ File containing input processing layer, including Pairwise Feature construction 
 """
 
 import functools
-from typing import Literal, Optional, Tuple, Dict
+from typing import Literal
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -99,7 +99,7 @@ class InputPreprocessor(hk.Module):
         config: InputFeatureConfig,
         mlp_config: MLPConfig,
         wavefunction_definition: WavefunctionDefinition,
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> None:
         super().__init__(name=name)
         self.config = config
@@ -116,8 +116,8 @@ class InputPreprocessor(hk.Module):
         r: jnp.ndarray,
         R: jnp.ndarray,
         Z: jnp.ndarray,
-        fixed_params: Dict = None,
-    ) -> Tuple[DiffAndDistances, InputFeatures]:
+        fixed_params: dict = None,
+    ) -> tuple[DiffAndDistances, InputFeatures]:
         Z = jnp.array(Z, int)
         if Z.ndim == 1:  # no batch-dim for Z => tile across batch
             Z = jnp.tile(Z, r.shape[:-2] + (1,))

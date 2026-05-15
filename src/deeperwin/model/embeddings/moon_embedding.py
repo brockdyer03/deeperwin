@@ -1,4 +1,4 @@
-from typing import Iterable
+from collections.abc import Iterable
 import jax
 import jax.numpy as jnp
 import haiku as hk

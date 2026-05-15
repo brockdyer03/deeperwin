@@ -8,14 +8,12 @@ CLI to process a single molecule.
 import copy
 import os
 import sys
-from typing import Dict
 import numpy as np
-from jax.config import config as jax_config
 from deeperwin.configuration import Configuration, build_physical_configs_from_changes
 import haiku as hk
+import jax
 
-
-def _setup_environment(raw_config: Dict, config: Configuration) -> None:
+def _setup_environment(raw_config: dict, config: Configuration) -> None:
     # Set environment variable to control jax behaviour before importing jax
     if config.computation.disable_tensor_cores:
         os.environ["NVIDIA_TF32_OVERRIDE"] = "0"
@@ -25,8 +23,8 @@ def _setup_environment(raw_config: Dict, config: Configuration) -> None:
         os.environ["XLA_FLAGS"] = f"--xla_force_host_platform_device_count={config.computation.n_local_devices}"
 
     # update jax config
-    jax_config.update("jax_enable_x64", config.computation.float_precision == "float64")
-    jax_config.update("jax_default_matmul_precision", "highest")
+    jax.config.update("jax_enable_x64", config.computation.float_precision == "float64")
+    jax.config.update("jax_default_matmul_precision", "highest")
 
     import chex
 

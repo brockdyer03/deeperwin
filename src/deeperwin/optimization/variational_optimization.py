@@ -1,5 +1,6 @@
 import logging
-from typing import List, Dict, Tuple, Optional, Any, Callable
+from collections.abc import Callable
+from typing import Any
 import jax
 import numpy as np
 
@@ -210,13 +211,13 @@ def optimize_wavefunction(
 def optimize_shared_wavefunction(
     log_psi_squared: Callable,
     cache_func: Callable,
-    geometries_data_stores: List[GeometryDataStore],
+    geometries_data_stores: list[GeometryDataStore],
     config: Configuration,
-    params: Dict[str, Dict[str, jax.Array]],
+    params: dict[str, dict[str, jax.Array]],
     rng_seed: int,
-    initial_opt_state: Optional[Any] = None,
-    initial_clipping_state: Optional[Any] = None,
-) -> Tuple[Dict, Any, List[GeometryDataStore], Dict]:
+    initial_opt_state: Any | None = None,
+    initial_clipping_state: Any | None = None,
+) -> tuple[dict, Any, list[GeometryDataStore], dict]:
     """
     Minimizes the energy of the wavefunction defined by the callable `log_psi_squared` by adjusting the trainable parameters for
     multiple geometries at once sharing all trainable parameters.

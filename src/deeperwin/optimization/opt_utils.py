@@ -1,4 +1,5 @@
-from typing import Callable, Dict, Tuple, Literal
+from collections.abc import Callable
+from typing import Literal
 import jax
 import jax.numpy as jnp
 import optax
@@ -12,10 +13,10 @@ def run_mcmc_with_cache(
     log_psi_sqr_func: Callable,
     cache_func_pmapped: Callable,
     mcmc: MetropolisHastingsMonteCarlo,
-    params: Dict,
-    spin_state: Tuple[int],
+    params: dict,
+    spin_state: tuple[int],
     mcmc_state: MCMCState,
-    fixed_params: Dict,
+    fixed_params: dict,
     split_mcmc=True,
     merge_mcmc=True,
     mode: Literal["burnin", "intersteps"] = "intersteps",

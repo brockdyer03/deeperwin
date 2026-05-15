@@ -1,7 +1,6 @@
 import haiku as hk
 import jax
 from jax import numpy as jnp
-from typing import Optional
 
 
 class Attention(hk.Module):
@@ -10,12 +9,12 @@ class Attention(hk.Module):
         attention_dim: int,
         n_heads: int,
         residual: bool,
-        attention_value_dim: Optional[int] = None,
-        output_dim: Optional[int] = None,
+        attention_value_dim: int | None = None,
+        output_dim: int | None = None,
         layer_norm: bool = False,
         output_linear: bool = True,
         use_residual_before_lin: bool = False,
-        name: Optional[str] = None,
+        name: str | None = None,
     ):
         self._attention_value_dim = attention_value_dim or attention_dim
         self._attention_dim = attention_dim

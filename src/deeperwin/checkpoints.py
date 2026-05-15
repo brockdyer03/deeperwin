@@ -18,22 +18,22 @@ import numpy as np
 import haiku as hk
 import zipfile
 from dataclasses import dataclass, fields
-from typing import Optional, Any, List, Union
+from typing import Any
 from deeperwin.utils.utils import split_params, without_cache
 
 
 @dataclass
 class RunData:
-    config: Optional[Union[Configuration, dict]] = None
-    history: Optional[List[dict]] = None
-    summary: Optional[dict] = None
-    metadata: Optional[dict] = None
-    params: Optional[dict] = None
-    ema_params: Optional[dict] = None
-    fixed_params: Optional[dict] = None
-    opt_state: Optional[Any] = None
-    mcmc_state: Optional[MCMCState] = None
-    clipping_state: Optional[Any] = None
+    config         : Configuration | dict | None = None
+    history        : list[dict]           | None = None
+    summary        : dict                 | None = None
+    metadata       : dict                 | None = None
+    params         : dict                 | None = None
+    ema_params     : dict                 | None = None
+    fixed_params   : dict                 | None = None
+    opt_state      : Any                  | None = None
+    mcmc_state     : MCMCState            | None = None
+    clipping_state : Any                  | None = None
 
 
 def write_history(f, history, delim=";"):

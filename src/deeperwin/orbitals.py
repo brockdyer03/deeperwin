@@ -4,7 +4,7 @@ Contains the physical baseline model (e.g. CASSCF).
 This module provides functionality to calculate a basline solution using pySCF and functions to
 """
 
-from typing import List, Tuple, Optional, Union, Dict, Iterable
+from collections.abc import Iterable
 import dataclasses
 import functools
 import pathlib
@@ -51,7 +51,7 @@ class AtomicOrbital:
     alpha: jnp.array
     weights: jnp.array
     angular_momenta: jnp.array  # int
-    cusp_params: Optional[Tuple[jnp.array]] = None
+    cusp_params: tuple[jnp.array] | None = None
 
     @property
     def l_tot(self):
@@ -71,26 +71,26 @@ class AtomicOrbital:
 
 @chex.dataclass
 class OrbitalParamsHF:
-    atomic_orbitals: List[AtomicOrbital] = dataclasses.field(default_factory=lambda: [])
-    mo_coeff: Tuple[jnp.array, jnp.array] = (None, None)  # float; [n_basis x n_orbitals], [n_basis x n_orbitals]
-    mo_occ: Tuple[jnp.array, jnp.array] = (None, None)  # int; [n_orbs_total], [n_orbs_total]
-    mo_energies: Tuple[jnp.array, jnp.array] = (None, None)  # float; [n_orbitals], [n_orbitals]
+    atomic_orbitals: list[AtomicOrbital] = dataclasses.field(default_factory=lambda: [])
+    mo_coeff: tuple[jnp.array, jnp.array] = (None, None)  # float; [n_basis x n_orbitals], [n_basis x n_orbitals]
+    mo_occ: tuple[jnp.array, jnp.array] = (None, None)  # int; [n_orbs_total], [n_orbs_total]
+    mo_energies: tuple[jnp.array, jnp.array] = (None, None)  # float; [n_orbitals], [n_orbitals]
 
 
 @chex.dataclass
 class OrbitalParamsPeriodicMeanField:
-    atomic_orbitals: List[AtomicOrbital] = dataclasses.field(default_factory=lambda: [])
-    mo_coeff_pyscf: Tuple[jnp.array, jnp.array] = (
+    atomic_orbitals: list[AtomicOrbital] = dataclasses.field(default_factory=lambda: [])
+    mo_coeff_pyscf: tuple[jnp.array, jnp.array] = (
         None,
         None,
     )  # float; [n_orbs_total x n_basis], [n_orbs_total x n_basis]
-    mo_coeff: Tuple[jnp.array, jnp.array] = (None, None)  # float; [n_orbs_total x n_basis], [n_orbs_total x n_basis]
-    mo_energies: Tuple[jnp.array, jnp.array] = (None, None)  # float; [n_orbs_total], [n_orbs_total]
-    mo_occ: Tuple[jnp.array, jnp.array] = (None, None)  # int; [n_orbs_total], [n_orbs_total]
-    k_points: Tuple[jnp.array, jnp.array] = (None, None)  # float; [3 x n_orbs_total], [3 x n_orbs_total]
-    ind_band: Tuple[jnp.array, jnp.array] = (None, None)  # int; [n_orbs_total], [n_orbs_total]
-    orbital_center: Tuple[jnp.array, jnp.array] = (None, None)  # int; [n_orbs_total], [n_orbs_total]
-    k_twist: Optional[jnp.array] = None
+    mo_coeff: tuple[jnp.array, jnp.array] = (None, None)  # float; [n_orbs_total x n_basis], [n_orbs_total x n_basis]
+    mo_energies: tuple[jnp.array, jnp.array] = (None, None)  # float; [n_orbs_total], [n_orbs_total]
+    mo_occ: tuple[jnp.array, jnp.array] = (None, None)  # int; [n_orbs_total], [n_orbs_total]
+    k_points: tuple[jnp.array, jnp.array] = (None, None)  # float; [3 x n_orbs_total], [3 x n_orbs_total]
+    ind_band: tuple[jnp.array, jnp.array] = (None, None)  # int; [n_orbs_total], [n_orbs_total]
+    orbital_center: tuple[jnp.array, jnp.array] = (None, None)  # int; [n_orbs_total], [n_orbs_total]
+    k_twist: jnp.array | None = None
     # TODO: use different lattices for different orbitals
     # rcut: jnp.ndarray = None
     lattice_vecs: jnp.ndarray = None
@@ -111,13 +111,13 @@ class OrbitalParamsPeriodicMeanField:
 
 @chex.dataclass
 class OrbitalParamsCI:
-    atomic_orbitals: List[AtomicOrbital] = dataclasses.field(default_factory=lambda: [])
-    mo_coeff: Tuple[jnp.array, jnp.array] = (None, None)  # float; [n_basis x n_orbitals], [n_basis x n_orbitals]
-    idx_orbitals: Tuple[jnp.array, jnp.array] = (None, None)  # int; [n_dets x n_up], [n_dets x n_dn]
+    atomic_orbitals: list[AtomicOrbital] = dataclasses.field(default_factory=lambda: [])
+    mo_coeff: tuple[jnp.array, jnp.array] = (None, None)  # float; [n_basis x n_orbitals], [n_basis x n_orbitals]
+    idx_orbitals: tuple[jnp.array, jnp.array] = (None, None)  # int; [n_dets x n_up], [n_dets x n_dn]
     ci_weights: jnp.array = None
 
 
-OrbitalParamsType = Union[OrbitalParamsHF, OrbitalParamsCI, OrbitalParamsPeriodicMeanField]
+OrbitalParamsType = OrbitalParamsHF | OrbitalParamsCI | OrbitalParamsPeriodicMeanField
 
 #################################################################################
 ############################ Orbital functions ##################################
@@ -148,7 +148,7 @@ def eval_gaussian_orbital(el_ion_diff, el_ion_dist, ao: AtomicOrbital):
     return phi_gto
 
 
-def eval_atomic_orbitals(el_ion_diff, el_ion_dist, atomic_orbitals: List[AtomicOrbital]):
+def eval_atomic_orbitals(el_ion_diff, el_ion_dist, atomic_orbitals: list[AtomicOrbital]):
     """
     Args:
         el_ion_diff: shape [N_batch x n_el x N_ion x 3]
@@ -174,7 +174,7 @@ def eval_atomic_orbitals(el_ion_diff, el_ion_dist, atomic_orbitals: List[AtomicO
 
 
 def eval_atomic_orbitals_kpoints(
-    el_ion_diff, el_ion_dist, atomic_orbitals: List[AtomicOrbital], lattice_vecs, k_points=None
+    el_ion_diff, el_ion_dist, atomic_orbitals: list[AtomicOrbital], lattice_vecs, k_points=None
 ):
     """Evaluates atomic orbitals on a grid of kpoints, corresponding to what is
     returned by pyscf.pbc.eval_gto.eval_gto. For debugging purposes"""
@@ -198,7 +198,7 @@ def eval_atomic_orbitals_kpoints(
 
 
 def eval_atomic_orbitals_periodic(
-    el_ion_diff, el_ion_dist, atomic_orbitals: List[AtomicOrbital], lattice_vecs, shift_vecs=None, k_twist=None
+    el_ion_diff, el_ion_dist, atomic_orbitals: list[AtomicOrbital], lattice_vecs, shift_vecs=None, k_twist=None
 ):
     """shift_vecs: Shift vectors corresponding to the origin of each primitive
     cell in the simulation cell."""
@@ -280,7 +280,7 @@ def evaluate_molecular_orbitals(
 
 
 def get_atomic_orbital_descriptors(
-    orbital_params: Union[OrbitalParamsHF, OrbitalParamsPeriodicMeanField],
+    orbital_params: OrbitalParamsHF | OrbitalParamsPeriodicMeanField,
     R: jax.Array,
     Z: jax.Array,
     lattice: jax.Array,
@@ -464,7 +464,7 @@ def _get_orbital_mapping(atomic_orbitals, all_elements):
     return orbitals_per_Z, irrep
 
 
-def _get_all_basis_functions(Z_values: List[int], basis_set, is_periodic=False, pyscf_options=None):
+def _get_all_basis_functions(Z_values: list[int], basis_set, is_periodic=False, pyscf_options=None):
     """Get all possible basis functions for a given set of chemical elements"""
     # Build a fictional "molecule" with all elements stacked on top of each other
     Z_values = sorted(list(set(Z_values)))
@@ -497,7 +497,7 @@ def build_pyscf_molecule_from_physical_config(
 
 
 def get_hartree_fock_solution(
-    physical_config: PhysicalConfig, basis_set, pyscf_options: Optional[PyscfOptionsConfig] = None
+    physical_config: PhysicalConfig, basis_set, pyscf_options: PyscfOptionsConfig | None = None
 ):
     molecule = build_pyscf_molecule_from_physical_config(physical_config, basis_set, pyscf_options=pyscf_options)
     atomic_orbitals = _get_atomic_orbital_basis_functions(molecule)
@@ -507,7 +507,7 @@ def get_hartree_fock_solution(
     return atomic_orbitals, hf
 
 
-def get_basis_set(basis_set: Union[str, Dict], atom_charges=None):
+def get_basis_set(basis_set: str | dict, atom_charges=None):
     """ "
     Convert strings of the form H:6-31G**__O:6-311G__default:6-31G to dicts of the same information for pyscf
     """
@@ -1195,7 +1195,7 @@ def _calculate_ao_cusp_params(ao: AtomicOrbital, Z):
     return r_c, offset[ind_opt], sign[ind_opt], poly[:, ind_opt]
 
 
-def calculate_molecular_orbital_cusp_params(atomic_orbitals: List[AtomicOrbital], mo_coeff, R, Z, r_cusp_scale):
+def calculate_molecular_orbital_cusp_params(atomic_orbitals: list[AtomicOrbital], mo_coeff, R, Z, r_cusp_scale):
     # TODO: Will this function be used in periodic calculations?
     n_molecular_orbitals, n_nuclei, n_atomic_orbitals = mo_coeff.shape[1], len(R), len(atomic_orbitals)
     cusp_rc = np.minimum(r_cusp_scale / Z, 0.5)

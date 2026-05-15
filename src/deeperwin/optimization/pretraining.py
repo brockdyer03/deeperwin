@@ -1,6 +1,7 @@
 # TODO: refactor to not duplicate as much between shared and independent optimization; potentially formulate independent optimization as shared with a single geometry?
 import logging
-from typing import Callable, Dict, Optional, Any, Tuple, List
+from collections.abc import Callable
+from typing import Any
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -82,15 +83,15 @@ def pretrain_orbitals(
     orbital_func: Callable,
     cache_func: Callable,
     mcmc_state: MCMCState,
-    params: Dict,
-    fixed_params: Dict,
+    params: dict,
+    fixed_params: dict,
     pretrain_config: PreTrainingConfig,
     phys_config: PhysicalConfig,
     model_config: ModelConfig,
     rng_seed: int,
-    logger: Optional[DataLogger] = None,
-    opt_state: Optional[Any] = None,
-) -> Tuple[Dict, Any, Any]:
+    logger: DataLogger | None = None,
+    opt_state: Any | None = None,
+) -> tuple[dict, Any, Any]:
     assert "baseline_orbitals" in fixed_params, "Baseline orbitals must be provided for pre-training"
 
     loss_func = build_pretraining_loss_func(orbital_func, pretrain_config, model_config)
@@ -180,15 +181,15 @@ def pretrain_orbitals(
 def pretrain_orbitals_shared(
     orbital_func: Callable,
     cache_func: Callable,
-    geometries_data_stores: List[GeometryDataStore],
-    mcmc_state: Optional[MCMCState],
-    params: Dict[str, Dict[str, jax.Array]],
+    geometries_data_stores: list[GeometryDataStore],
+    mcmc_state: MCMCState | None,
+    params: dict[str, dict[str, jax.Array]],
     pretrain_config: PreTrainingConfig,
     model_config: ModelConfig,
-    distortion_config: Optional[DistortionConfig],
+    distortion_config: DistortionConfig | None,
     rng_seed: int,
-    opt_state: Optional[Any] = None,
-) -> Tuple[Dict, Any]:
+    opt_state: Any | None = None,
+) -> tuple[dict, Any]:
     # for each geometry set the pretraining orbital targets
     for g in geometries_data_stores:
         assert "baseline_orbitals" in g.fixed_params, "Baseline orbitals must be provided for pre-training"

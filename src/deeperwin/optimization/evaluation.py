@@ -3,7 +3,6 @@ Logic for wavefunction evaluation.
 """
 
 import logging
-from typing import Tuple, Optional, Dict
 import functools
 import jax
 import jax.numpy as jnp
@@ -108,7 +107,7 @@ def evaluate_wavefunction(
     rng_seed: int,
     loggers: LoggerCollection = None,
     opt_epoch_nr: int = None,
-    extra_summary_metrics: Optional[Dict] = None,
+    extra_summary_metrics: dict | None = None,
 ):
     # Burn-in MCMC
     rng = jax.random.PRNGKey(rng_seed)
@@ -141,7 +140,7 @@ def evaluate_wavefunction(
         )
 
     @functools.partial(jax.pmap, axis_name="devices", static_broadcasted_argnums=(2,))
-    def get_observables(params, fixed_params, spin_state: Tuple[int], mcmc_state: MCMCState):
+    def get_observables(params, fixed_params, spin_state: tuple[int], mcmc_state: MCMCState):
         metrics = dict()
         if config.calculate_energies:
             energies = get_local_energy_func(params, spin_state, *mcmc_state.build_batch(fixed_params))

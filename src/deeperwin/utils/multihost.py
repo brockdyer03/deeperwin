@@ -2,7 +2,7 @@ import logging
 import os
 import subprocess
 import jax
-from jax.lib import xla_bridge
+from jax.extend import backend
 
 
 def disable_slave_loggers(logger):
@@ -25,7 +25,7 @@ def configure_hardware(
             jax.local_device_count() == config.computation.n_local_devices
         ), f"{jax.local_device_count()}, {config.computation.n_local_devices}"
 
-    used_hardware = xla_bridge.get_backend().platform
+    used_hardware = backend.get_backend().platform
     if config.computation.require_gpu and (used_hardware == "cpu"):
         raise ValueError("Required GPU, but no GPU available: Aborting.")
 

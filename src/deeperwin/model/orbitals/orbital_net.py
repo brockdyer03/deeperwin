@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import haiku as hk
 from jax import numpy as jnp
 
@@ -58,7 +56,7 @@ class OrbitalNet(hk.Module):
 
     def __call__(
         self, diff_dist: DiffAndDistances, embeddings: Embeddings, fixed_params, n_ions: int, n_up: int, n_dn: int
-    ) -> Tuple[jnp.ndarray, jnp.ndarray]:
+    ) -> tuple[jnp.ndarray, jnp.ndarray]:
         mo_up, mo_dn = 1.0, 1.0
         if self.config.envelope_orbitals:
             up, dn = EnvelopeOrbitals(

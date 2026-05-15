@@ -2,7 +2,7 @@
 File containing a regular Multi-Layer Perceptron (MLP) implemented in haiku.
 """
 
-from typing import Iterable, Optional, Callable
+from collections.abc import Iterable, Callable
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -27,7 +27,7 @@ class MLP(hk.Module):
         linear_out: bool = None,
         residual=None,
         use_bias=True,
-        name: Optional[str] = None,
+        name: str | None = None,
     ):
         super().__init__(name=name)
         config = config or MLPConfig()
