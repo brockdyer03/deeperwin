@@ -52,7 +52,7 @@ def _select_master_data(x):
 
 def replicate_across_devices(data):
     # Step 0: Preserve dtypes, since bools are lost in psum
-    dtypes = jax.tree_map(lambda x: x.dtype, data)
+    dtypes = jax.tree.map(lambda x: x.dtype, data)
 
     # Step 1: Tile data across local devices
     data = jax.tree_util.tree_map(
@@ -62,7 +62,7 @@ def replicate_across_devices(data):
 
     # Step 2: Replace data on each device by data from device 0 on process 0
     data = _select_master_data(data)
-    return jax.tree_map(lambda x, dtype: x.astype(dtype), data, dtypes)
+    return jax.tree.map(lambda x, dtype: x.astype(dtype), data, dtypes)
 
 
 def replicate_across_processes(data):

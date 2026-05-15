@@ -19,6 +19,7 @@ import pyscf.ci
 import pyscf.lo
 import pyscf.mcscf
 import numpy as np
+from scipy.special import factorial
 import chex
 from deeperwin.configuration import (
     PhysicalConfig,
@@ -390,8 +391,8 @@ def _get_gto_normalization_factor(alpha, angular_momenta):
     l_tot = np.sum(angular_momenta)
     fac_alpha = (2 * alpha / np.pi) ** (3 / 4) * (8 * alpha) ** (l_tot / 2)
 
-    fac = np.array([np.math.factorial(x) for x in angular_momenta])
-    fac2 = np.array([np.math.factorial(2 * x) for x in angular_momenta])
+    fac = np.array([factorial(x) for x in angular_momenta])
+    fac2 = np.array([factorial(2 * x) for x in angular_momenta])
     fac_exponent = np.sqrt(np.prod(fac) / np.prod(fac2))
     factor = fac_alpha * fac_exponent
     return factor

@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 
 name = "deeperwin"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 version = "1.3.0"
 authors = [
     { name = "Michael Scherbela", email = "michael.scherbela@gmail.com" },
@@ -15,21 +15,21 @@ authors = [
 description = "A JAX based framework to calculate deep-learning VMC solutions to the Schrödinger equation"
 readme = "README.md"
 dependencies = [
-    "jax[cpu]==0.4.23", # CPU-only version of jax. Comment out for GPU support
+    "jax[cpu]", # CPU-only version of jax. Comment out for GPU support
     # Uncomment this AND the find-links directive in the [tool.uv] section for GPU support
-    # "jax[cuda12_pip]==0.4.23",
-    "numpy<2.0.0",
+    # "jax[cuda12_pip]",
+    "numpy>=2.0.0",
     "dm-haiku>=0.0.12",
     "optax>=0.2.2",
     "chex>=0.1.86",
-    "pyscf>=2.3.0,<2.7.0", # UCASSCF is broken in pyscf 2.7.0; remove this version cap once fixed
+    "pyscf>=2.13.0", # UCASSCF is broken in pyscf 2.7.0; remove this version cap once fixed
 
     # VMC
     "folx>=0.2.6",
-    "kfac_jax",
+    "kfac_jax>=0.0.8",
 
     # utilities
-    "ruamel.yaml >= 0.18",
+    "ruamel.yaml>=0.18",
     "pydantic>=2.0.0",
     "wandb>=0.18",
     "pytest>=8.0",
@@ -42,6 +42,34 @@ dependencies = [
     "seaborn>=0.13",
     "ase>=3.0",
 ]
+# dependencies = [
+#     "jax[cpu]==0.4.23", # CPU-only version of jax. Comment out for GPU support
+#     # Uncomment this AND the find-links directive in the [tool.uv] section for GPU support
+#     # "jax[cuda12_pip]==0.4.23",
+#     "numpy<2.0.0",
+#     "dm-haiku>=0.0.12",
+#     "optax>=0.2.2",
+#     "chex>=0.1.86",
+#     "pyscf>=2.3.0,<2.7.0", # UCASSCF is broken in pyscf 2.7.0; remove this version cap once fixed
+
+#     # VMC
+#     "folx>=0.2.6",
+#     "kfac_jax",
+
+#     # utilities
+#     "ruamel.yaml >= 0.18",
+#     "pydantic>=2.0.0",
+#     "wandb>=0.18",
+#     "pytest>=8.0",
+#     "pytest-xdist>=3.0",
+#     "pytest-env>=1.0",
+
+#     # analysis
+#     "pandas>=2.0",
+#     "matplotlib>=3.9",
+#     "seaborn>=0.13",
+#     "ase>=3.0",
+# ]
 
 [project.scripts]
 deeperwin = "deeperwin.cli:main"
@@ -50,7 +78,7 @@ copy_wandb = "deeperwin.run_tools.copy_wandb_run:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-n 10"
+# addopts = "-n 6"
 env = ['CUDA_VISIBLE_DEVICES=""']
 
 [tool.ruff]
@@ -68,13 +96,14 @@ ignore = [
     "E731", # allow assignign lambdas
     "E741", # allow "ambiguous variable names", in particular the variable l for angular momentum
 ]
+select = ["NPY201"]
 
 [tool.uv]
-constraint-dependencies = [
-    "nvidia-cudnn-cu12<9.0", # jax==0.4.23 misses version constraint cudnn<9.0; remove for higher jax versions
-    "nvidia-cudnn-cu11<9.0",
-    "scipy <=1.12.0,>= 1.6.0" # incompatibility with jax==0.4.23
-    ] 
+# constraint-dependencies = [
+#     "nvidia-cudnn-cu12<9.0", # jax==0.4.23 misses version constraint cudnn<9.0; remove for higher jax versions
+#     "nvidia-cudnn-cu11<9.0",
+#     "scipy <=1.12.0,>= 1.6.0" # incompatibility with jax==0.4.23
+#     ] 
 index-strategy = "unsafe-best-match"
 
 find-links = [
@@ -82,4 +111,9 @@ find-links = [
 ]
 
 [tool.uv.sources]
-kfac_jax = { editable = true, path = "./custom_kfac_jax" }
+kfac_jax = {git = "https://github.com/google-deepmind/kfac-jax"}
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.13",
+]

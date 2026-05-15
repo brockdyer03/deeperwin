@@ -37,6 +37,7 @@ register_generic = layers_and_loss_tags.register_generic
 register_dense = layers_and_loss_tags.register_dense
 register_conv2d = layers_and_loss_tags.register_conv2d
 register_scale_and_shift = layers_and_loss_tags.register_scale_and_shift
+register_repeated_dense = layers_and_loss_tags.register_repeated_dense
 
 # Tag graph matcher
 auto_register_tags = tag_graph_matcher.auto_register_tags
