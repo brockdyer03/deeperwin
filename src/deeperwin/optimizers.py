@@ -108,15 +108,16 @@ class OptaxWrapper:
     ) -> kfac_jax.optimizer.FuncOutputs:
         """A single step of optax."""
         batch = self._batch_process_func(batch)
-        func_args = kfac_jax.optimizer.make_func_args(
+        func_args: tuple = kfac_jax.optimizer.make_func_args(
             params=params,
             func_state=func_state,
             rng=rng,
-            static_args=static_args,
+            # static_args=static_args,
             batch=batch,
             has_state=self._value_func_has_state,
             has_rng=self._value_func_has_rng,
         )
+        func_args = list(func_args).insert(2, static_args)
         out, grads = self._value_and_grad_func(*func_args)
 
         if not self._value_func_has_aux and not self._value_func_has_state:
