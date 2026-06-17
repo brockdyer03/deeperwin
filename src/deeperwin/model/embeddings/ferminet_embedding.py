@@ -198,6 +198,7 @@ class FermiNetEmbedding(hk.Module):
         n_el = features_el_el.shape[-3]  # [batch x n_el x n_el x features]
         batch_dims = features_el_el.shape[:-3]
         n_dn = n_el - n_up
+
         h_uu = features_el_el[..., :n_up, :n_up, :].reshape(batch_dims + (n_up * n_up, -1))
         h_ud = features_el_el[..., :n_up, n_up:, :].reshape(batch_dims + (n_up * n_dn, -1))
         h_du = features_el_el[..., n_up:, :n_up, :].reshape(batch_dims + (n_up * n_dn, -1))

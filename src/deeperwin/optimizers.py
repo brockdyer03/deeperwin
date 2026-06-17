@@ -108,16 +108,16 @@ class OptaxWrapper:
     ) -> kfac_jax.optimizer.FuncOutputs:
         """A single step of optax."""
         batch = self._batch_process_func(batch)
-        func_args: tuple = kfac_jax.optimizer.make_func_args(
+        func_args = kfac_jax.optimizer.make_func_args(
             params=params,
             func_state=func_state,
             rng=rng,
-            # static_args=static_args,
+            static_args=static_args,
             batch=batch,
             has_state=self._value_func_has_state,
             has_rng=self._value_func_has_rng,
         )
-        func_args = list(func_args).insert(2, static_args)
+
         out, grads = self._value_and_grad_func(*func_args)
 
         if not self._value_func_has_aux and not self._value_func_has_state:
@@ -184,7 +184,7 @@ def build_optimizer(
 ):
     if opt_config.name in ["kfac", "kfac_adam"]:
         schedule = build_lr_schedule(opt_config.learning_rate, opt_config.lr_schedule)
-        internal_optimizer = build_optax_optimizer(opt_config.internal_optimizer)
+        # internal_optimizer = build_optax_optimizer(opt_config.internal_optimizer)
         damping_scheduler = build_lr_schedule(opt_config.damping, opt_config.damping_schedule)
         return kfac_jax.Optimizer(
             value_and_grad_func,
@@ -196,16 +196,16 @@ def build_optimizer(
             pmap_axis_name="devices",
             momentum_schedule=lambda t: opt_config.momentum,
             damping_schedule=damping_scheduler,
-            internal_optimizer=internal_optimizer,
+            # internal_optimizer=internal_optimizer,
             learning_rate_schedule=schedule,
             inverse_update_period=opt_config.update_inverse_period,
             num_burnin_steps=opt_config.n_burn_in,
             register_only_generic=opt_config.register_generic,
-            norm_constraint_mode=opt_config.norm_constraint_mode,
+            # norm_constraint_mode=opt_config.norm_constraint_mode,
             norm_constraint=opt_config.norm_constraint,
-            scale_nc_by_std_dev=opt_config.scale_nc_by_std_dev,
-            min_clip_nc=opt_config.min_clip_nc,
-            max_clip_nc=opt_config.max_clip_nc,
+            # scale_nc_by_std_dev=opt_config.scale_nc_by_std_dev,
+            # min_clip_nc=opt_config.min_clip_nc,
+            # max_clip_nc=opt_config.max_clip_nc,
             estimation_mode=opt_config.estimation_mode,
             min_damping=opt_config.min_damping,
             curvature_ema=opt_config.curvature_ema,

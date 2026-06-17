@@ -111,7 +111,8 @@ find-links = [
 ]
 
 [tool.uv.sources]
-kfac_jax = {git = "https://github.com/google-deepmind/kfac-jax"}
+# kfac_jax = {git = "https://github.com/google-deepmind/kfac-jax"}
+kfac_jax = { editable = true, path = "/home/brock/Documents/github/kfac-jax" }
 
 [dependency-groups]
 dev = [
