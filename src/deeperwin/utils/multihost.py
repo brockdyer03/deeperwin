@@ -58,8 +58,18 @@ def init_multi_host_on_slurm(n_nodes=None):
         local_device_ids = [int(i) for i in os.environ["CUDA_VISIBLE_DEVICES"].split(",")]
     else:
         local_device_ids = None
-    print(f"Initializing process {process_id} / {process_count} with local_devices={local_device_ids}")
-    jax.distributed.initialize(master_hostname + ":8080", process_count, process_id, local_device_ids)
-    assert (
-        jax.process_index() == process_id
-    ), f"jax.process_index() != process_id; {jax.process_index()} != {process_id}"
+    # print(f"Initializing process {process_id} / {process_count} with local_devices={local_device_ids}")
+    # print('master_hostname + ":8080":    ', master_hostname + ":8080")
+    # print('process_count:    ', process_count)
+    # print('process_id:    ', process_id)
+    # print('local_device_ids:    ', local_device_ids)
+    jax.distributed.initialize(
+        # coordinator_address    = master_hostname + ":8080",
+        # num_processes          = process_count,
+        # process_id             = process_id,
+        # local_device_ids       = local_device_ids,
+        # initialization_timeout = 60,
+    )
+    # assert (
+    #     jax.process_index() == process_id
+    # ), f"jax.process_index() != process_id; {jax.process_index()} != {process_id}"

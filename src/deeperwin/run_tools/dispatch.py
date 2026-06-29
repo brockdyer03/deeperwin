@@ -531,6 +531,42 @@ export NVIDIA_TF32_OVERRIDE=0
 {command}"""
 
 
+def get_jobfile_content_perlmutter(
+    command: str,
+    jobname: str,
+    queue: str,
+    time: str,
+    conda_env,
+    n_local_gpus: int,
+    n_nodes: int,
+    user_email: str,
+    account: str,
+):
+    return f"""#!/bin/bash
+#SBATCH -A {account}
+#SBATCH -C gpu
+#SBATCH -q {queue}
+#SBATCH -t {time}
+#SBATCH -N {n_nodes}
+#SBATCH --ntasks-per-node={n_local_gpus}
+#SBATCH -G {n_local_gpus}
+#SBATCH --gres=gpu:{n_local_gpus}
+#SBATCH -c 1
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user={user_email}
+#SBATCH -J {jobname}
+#SBATCH -o {jobname}.out
+#SBATCH -e {jobname}.err
+#SBATCH --export=ALL
+
+echo $SLURM_SUBMIT_DIR
+cd $SLURM_SUBMIT_DIR
+
+source /pscratch/sd/b/brdyer/deeperwin/.venv/bin/activate
+
+{command}
+"""
+
 def _determine_hpc_sytstem():
     machine_name = os.uname()[1]
     if machine_name == "gpu1-mat":  # HGX
@@ -558,16 +594,16 @@ def dispatch_job(command, job_dir, config, sleep_in_sec, dry_run=False):
         dispatch_to = _determine_hpc_sytstem()
     logging.info(f"Dispatching command {' '.join(command)} to: {dispatch_to}")
     dispatch_func = dict(
-        local=dispatch_to_local,
-        local_background=dispatch_to_local_background,
-        local_slurm=dispatch_to_local_slurm,
-        vsc4=dispatch_to_vsc4,
-        vsc5=dispatch_to_vsc5,
-        dgx=dispatch_to_dgx,
-        hgx=dispatch_to_hgx,
-        leonardo=dispatch_to_leonardo,
-        juwels=dispatch_to_juwels,
-        baskerville=dispatch_to_baskerville,
-        vega=dispatch_to_vega,
+        local            = dispatch_to_local,
+        local_background = dispatch_to_local_background,
+        local_slurm      = dispatch_to_local_slurm,
+        vsc4             = dispatch_to_vsc4,
+        vsc5             = dispatch_to_vsc5,
+        dgx              = dispatch_to_dgx,
+        hgx              = dispatch_to_hgx,
+        leonardo         = dispatch_to_leonardo,
+        juwels           = dispatch_to_juwels,
+        baskerville      = dispatch_to_baskerville,
+        vega             = dispatch_to_vega,
     )[dispatch_to]
     dispatch_func(command, job_dir, config, sleep_in_sec, dry_run)

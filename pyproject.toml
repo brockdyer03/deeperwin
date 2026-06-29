@@ -15,9 +15,9 @@ authors = [
 description = "A JAX based framework to calculate deep-learning VMC solutions to the Schrödinger equation"
 readme = "README.md"
 dependencies = [
-    "jax[cpu]==0.4.23", # CPU-only version of jax. Comment out for GPU support
+    # "jax[cpu]==0.4.23", # CPU-only version of jax. Comment out for GPU support
     # Uncomment this AND the find-links directive in the [tool.uv] section for GPU support
-    # "jax[cuda12_pip]==0.4.23",
+    "jax[cuda12_pip]==0.4.23",
     "numpy<2.0.0",
     "dm-haiku>=0.0.12",
     "optax>=0.2.2",
@@ -78,7 +78,7 @@ constraint-dependencies = [
 index-strategy = "unsafe-best-match"
 
 find-links = [
-    # "https://storage.googleapis.com/jax-releases/jax_cuda_releases.html" # uncomment for GPU support
+    "https://storage.googleapis.com/jax-releases/jax_cuda_releases.html" # uncomment for GPU support
 ]
 
 [tool.uv.sources]

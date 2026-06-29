@@ -1,14 +1,29 @@
 experiment_name: transferable_H-chain
 physical:
-  changes: [{R: [[0.0, 0.0, 0.0], [1.8, 0.0, 0.0]], Z: [1, 1], n_electrons: 2, n_up: 1,
-      name: HChainPBC2, comment: 0cc90b5c0204776986a86e1ee0a36886__HChainPBC2_1.80_k=0.000,
-      E_ref: null, E_ref_source: null, periodic: {lattice_prim: [[3.6, 0.0, 0.0],
-          [0.0, 100.0, 0.0], [0.0, 0.0, 100.0]], supercell: [1, 1, 1], k_twist: [
-          0.0, 0.0, 0.0]}}, {R: [[0.0, 0.0, 0.0], [1.8, 0.0, 0.0]], Z: [1, 1], n_electrons: 2,
-      n_up: 1, name: HChainPBC2, comment: 9baef8dbc1fb3b11d224bd28a966666b__HChainPBC2_1.80_k=0.500,
-      E_ref: null, E_ref_source: null, periodic: {lattice_prim: [[3.6, 0.0, 0.0],
-          [0.0, 100.0, 0.0], [0.0, 0.0, 100.0]], supercell: [1, 1, 1], k_twist: [
-          0.5, 0.0, 0.0]}}]
+  changes: [
+    {
+      R: [
+        [ 0.0, 0.0, 0.0 ],
+        [ 1.8, 0.0, 0.0 ]
+      ],
+      Z: [ 1, 1 ],
+      n_electrons: 2,
+      n_up: 1,
+      name: HChainPBC2,
+      comment: 0cc90b5c0204776986a86e1ee0a36886__HChainPBC2_1.80_k=0.000,
+      E_ref: null,
+      E_ref_source: null,
+      periodic: {
+        lattice_prim: [
+          [ 3.6, 0.0, 0.0 ],
+          [ 0.0, 100.0, 0.0 ],
+          [ 0.0, 0.0, 100.0 ]
+        ],
+        supercell: [ 1, 1, 1 ],
+        k_twist: [ 0.0, 0.0, 0.0 ]
+      }
+    },
+    { R: [ [ 0.0, 0.0, 0.0 ], [ 1.8, 0.0, 0.0 ] ], Z: [ 1, 1 ], n_electrons: 2, n_up: 1, name: HChainPBC2, comment: 9baef8dbc1fb3b11d224bd28a966666b__HChainPBC2_1.80_k=0.500, E_ref: null, E_ref_source: null, periodic: { lattice_prim: [ [ 3.6, 0.0, 0.0 ], [ 0.0, 100.0, 0.0 ], [ 0.0, 0.0, 100.0 ] ], supercell: [ 1, 1, 1 ], k_twist: [ 0.5, 0.0, 0.0 ] } } ]
 pre_training:
   n_epochs: 100
   mcmc:
@@ -42,7 +57,7 @@ model:
   name: moon
   features:
     name: moon
-    include_twist: [el_el, el_ion]
+    include_twist: [ el_el, el_ion ]
   embedding:
     name: moon
     envelope_power_output: 2
@@ -67,7 +82,7 @@ model:
       use_atom_positions: true
       use_orbital_positions: true
       use_atom_orbital_diff: true
-      twist_encoding: [concat, periodic]
+      twist_encoding: [ concat, periodic ]
     n_determinants: 1
     determinant_schema: full_det
   use_el_el_cusp_correction: true
