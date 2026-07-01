@@ -3,7 +3,6 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-
 name = "deeperwin"
 requires-python = ">=3.14"
 version = "1.3.0"
@@ -22,7 +21,7 @@ dependencies = [
     "dm-haiku>=0.0.12",
     "optax>=0.2.2",
     "chex>=0.1.86",
-    "pyscf>=2.13.0", # UCASSCF is broken in pyscf 2.7.0; remove this version cap once fixed
+    "pyscf>=2.13.0",
 
     # VMC
     "folx>=0.2.6",
@@ -42,34 +41,6 @@ dependencies = [
     "seaborn>=0.13",
     "ase>=3.0",
 ]
-# dependencies = [
-#     "jax[cpu]==0.4.23", # CPU-only version of jax. Comment out for GPU support
-#     # Uncomment this AND the find-links directive in the [tool.uv] section for GPU support
-#     # "jax[cuda12_pip]==0.4.23",
-#     "numpy<2.0.0",
-#     "dm-haiku>=0.0.12",
-#     "optax>=0.2.2",
-#     "chex>=0.1.86",
-#     "pyscf>=2.3.0,<2.7.0", # UCASSCF is broken in pyscf 2.7.0; remove this version cap once fixed
-
-#     # VMC
-#     "folx>=0.2.6",
-#     "kfac_jax",
-
-#     # utilities
-#     "ruamel.yaml >= 0.18",
-#     "pydantic>=2.0.0",
-#     "wandb>=0.18",
-#     "pytest>=8.0",
-#     "pytest-xdist>=3.0",
-#     "pytest-env>=1.0",
-
-#     # analysis
-#     "pandas>=2.0",
-#     "matplotlib>=3.9",
-#     "seaborn>=0.13",
-#     "ase>=3.0",
-# ]
 
 [project.scripts]
 deeperwin = "deeperwin.cli:main"
@@ -78,7 +49,6 @@ copy_wandb = "deeperwin.run_tools.copy_wandb_run:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-# addopts = "-n 6"
 env = ['CUDA_VISIBLE_DEVICES=""']
 
 [tool.ruff]

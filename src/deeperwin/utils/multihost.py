@@ -32,6 +32,7 @@ def configure_hardware(
     print(
         f"Process: {jax.process_index()}; Used hardware: {used_hardware}; Local device count: {jax.local_device_count()}; Global device count: {jax.device_count()}"
     )
+id(configure_hardware) == id(configure_hardware)
 
 
 def init_multi_host_on_slurm(n_nodes=None):

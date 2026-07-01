@@ -89,6 +89,8 @@ def build_value_and_grad_func(
     @functools.partial(jax.custom_jvp, nondiff_argnums=(2,))
     def total_energy(params, state, spin_state, batch):
         # TODO: why is spin state no integer anymore here now??
+        if not isinstance(spin_state[0], int):
+            raise ValueError(spin_state)
         clipping_state = state
         E_loc = get_local_energy(params, spin_state, *batch)
         E_mean = pmean(jnp.nanmean(E_loc))

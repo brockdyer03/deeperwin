@@ -37,7 +37,7 @@ def test_forward_pass():
     )
 
     # build log_psi_squared
-    rng_seed = int(replicate_across_devices(np.array([10]))[0])
+    rng_seed = int(replicate_across_devices(np.array(10))[0])
     log_psi_squared, _, _, params, fixed_params = build_log_psi_squared(
         config=config.model, physical_config=config.physical, baseline_config=None, fixed_params=None, rng_seed=rng_seed
     )

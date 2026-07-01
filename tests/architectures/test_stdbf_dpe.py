@@ -28,7 +28,7 @@ def test_stdbf_dpe_architecture():
     )
 
     # build log_psi_squared
-    rng_seed = int(replicate_across_devices(np.array([10]))[0])
+    rng_seed = int(replicate_across_devices(np.array(10))[0])
     (
         log_psi_squared,
         orbital_func,

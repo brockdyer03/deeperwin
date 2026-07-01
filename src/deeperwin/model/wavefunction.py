@@ -120,6 +120,7 @@ class Wavefunction(hk.Module):
         fixed_params = fixed_params or {}
         diff_dist, features = self.input_preprocessor(n_up, n_dn, r, R, Z, fixed_params)
 
+        print("type(n_up) in wavefunction.py __call__: ", type(n_up))
         embeddings = self._calculate_embedding(diff_dist, features, n_up)
         mo_up, mo_dn = self._calculate_orbitals(diff_dist, embeddings, fixed_params, Z.shape[-1], n_up, n_dn)
         phase, log_psi_sqr = evaluate_sum_of_determinants(mo_up, mo_dn)
@@ -147,6 +148,7 @@ class Wavefunction(hk.Module):
     @haiku.experimental.name_like("__call__")
     def _calculate_embedding(self, diff_dist, features, n_up):
         if self.config.embedding.name in ["ferminet", "dpe4"]:
+            print("type(n_up) in wavefunction.py: ", type(n_up))
             return FermiNetEmbedding(self.config.embedding, self.config.mlp)(features, n_up)
         elif self.config.embedding.name == "moon":
             return MoonEmbedding(self.config.embedding)(diff_dist, features, n_up)
