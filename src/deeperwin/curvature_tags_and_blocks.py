@@ -14,9 +14,10 @@
 
 """Curvature blocks for FermiNet."""
 
+from collections.abc import Mapping, Sequence
+import dataclasses
 import functools
 from typing import Any
-from collections.abc import Mapping, Sequence
 
 import jax
 import jax.numpy as jnp
@@ -31,7 +32,7 @@ Numeric = kfac_jax.utils.Numeric
 vmap_matmul = jax.vmap(jnp.matmul, in_axes=(0, 0), out_axes=0)
 
 def register_repeated_dense(y, x, w, b, **kwargs):
-    kfac_jax.register_dense(y, x, w, b, variant="repeated_dense_tag", **kwargs)
+    kfac_jax.register_repeated_dense(y, x, w, b, **kwargs)
 
 
 class RepeatedDenseBlock(kfac_jax.DenseTwoKroneckerFactored):
@@ -45,19 +46,33 @@ class RepeatedDenseBlock(kfac_jax.DenseTwoKroneckerFactored):
     def update_curvature_matrix_estimate(
         self,
         state: kfac_jax.TwoKroneckerFactored.State,
-        estimation_data: Mapping[str, Sequence[Array]],
+        estimation_data: kfac_jax.LayerVjpData[Array],
         ema_old: Numeric,
         ema_new: Numeric,
+        identity_weight: Numeric,
         batch_size: int,
     ) -> kfac_jax.TwoKroneckerFactored.State:
-        estimation_data = dict(**estimation_data)
-        (x,) = estimation_data["inputs"]
-        (dy,) = estimation_data["outputs_tangent"]
+        (x,) = estimation_data.primals.inputs
+        (dy,) = estimation_data.tangents.outputs
         assert x.shape[0] == batch_size
-        estimation_data["inputs"] = (x.reshape([-1, x.shape[-1]]),)
-        estimation_data["outputs_tangent"] = (dy.reshape([-1, dy.shape[-1]]),)
+
+        estimation_data = dataclasses.replace(
+            estimation_data,
+            primals=dataclasses.replace(
+                estimation_data.primals,
+                inputs=(x.reshape([-1, x.shape[-1]]),),
+            ),
+            tangents=dataclasses.replace(
+                estimation_data.tangents,
+                outputs=(dy.reshape([-1, dy.shape[-1]]),),
+            ),
+        )
+
         batch_size = x.size // x.shape[-1]
-        return super().update_curvature_matrix_estimate(state, estimation_data, ema_old, ema_new, batch_size)
+
+        return super().update_curvature_matrix_estimate(
+            state, estimation_data, ema_old, ema_new, identity_weight, batch_size
+        )
 
 _dense = functools.partial(
     kfac_jax.tag_graph_matcher._dense,

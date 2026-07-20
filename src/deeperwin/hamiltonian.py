@@ -236,9 +236,6 @@ def get_kinetic_energy(
         eye = jnp.eye(n_coords)
 
         def grad_psi_func(r):
-            print("hamiltonian.py::get_kinetic_energy()::grad_psi_func() spin_state: ", spin_state)
-            for i in spin_state:
-                print(f"types: {type(i)}")
             return jax.grad(log_psi_squared, argnums=3)(
                 trainable_params, *spin_state, r.reshape([-1, 3]), R, Z, fixed_params
             ).flatten()
