@@ -16,7 +16,7 @@ readme = "README.md"
 dependencies = [
     "jax[cpu]", # CPU-only version of jax. Comment out for GPU support
     # Uncomment this AND the find-links directive in the [tool.uv] section for GPU support
-    # "jax[cuda12_pip]",
+    # "jax[cuda13]",
     "numpy>=2.0.0",
     "dm-haiku>=0.0.12",
     "optax>=0.2.2",
@@ -68,21 +68,8 @@ ignore = [
 ]
 select = ["NPY201"]
 
-[tool.uv]
-# constraint-dependencies = [
-#     "nvidia-cudnn-cu12<9.0", # jax==0.4.23 misses version constraint cudnn<9.0; remove for higher jax versions
-#     "nvidia-cudnn-cu11<9.0",
-#     "scipy <=1.12.0,>= 1.6.0" # incompatibility with jax==0.4.23
-#     ] 
-index-strategy = "unsafe-best-match"
-
-find-links = [
-    # "https://storage.googleapis.com/jax-releases/jax_cuda_releases.html" # uncomment for GPU support
-]
-
 [tool.uv.sources]
-# kfac_jax = {git = "https://github.com/google-deepmind/kfac-jax"}
-kfac_jax = { editable = true, path = "/home/brock/Documents/github/kfac-jax" }
+kfac_jax = { git = "https://github.com/brockdyer03/kfac-jax", branch="custom-deeperwin" }
 
 [dependency-groups]
 dev = [
